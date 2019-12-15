@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        #header{
+            margin-bottom: 10px;
+            height:20px;
+            background:#cccccc;
+            text-align: center;
+            position: relative;
+        }
+        #body{
+            width: 1000px;
+            height: 20px;
+            display: inline-block;
+            text-align: left;
+            overflow: hidden;
+            line-height: 20px;
+            margin-left: 25px;
+        }
+        #broad{
+            position: absolute; 
+            float: left;
+            top: 2px;
+            
+        }
+        #text{
+            color: red;
+            font-size: 14px;
+        }
+        #box{
+            width:1200px;
+            height:397px;
+            margin:0 auto;
+            overflow: hidden;
+            position: relative;
+        }
+        #pics{
+            width:8400px;
+            position:absolute;
+            left:-1200px;
+        }
+        #pic{
+            width:1200px;
+            overflow: hidden;
+            float: left;
+        }
+        #left{
+            display: block;
+            font-size: 30px;
+            width: 30px;
+            height: 50px;
+            text-align: center;
+            cursor: pointer;
+            line-height: 50px;
+            background: red;
+            position: absolute;
+            left: 30px;
+            top: 175px;
+            opacity: 0;
+            color: white;
+        }
+        #right{
+            display: block;
+            font-size: 30px;
+            width: 30px;
+            height: 50px;
+            text-align: center;
+            cursor: pointer;
+            line-height: 50px;
+            background: red;
+            position: absolute;
+            right: 30px;
+            top: 175px;
+            opacity: 0;
+            color: white;
+        }
+        .nav{
+            position: absolute;
+            bottom: 20px;
+            left :525px;
+            text-align: center;
+            
+        }
+        .nav li{
+            width:20px;
+            height: 20px;
+            background:#cccccc;
+            display: inline-block;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .nav .active{
+            background: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <img src="images/a15.png" id="broad">
+        <div id="body">
+            <span id="text" style="margin-left: 1000px;">[温馨提示]最近有不少不法分子在网上骗人，请大家注意！！！</span>
+        </div>
+    </div>
+    <div id="box" class="box">
+        <div id="pics">
+            <div id="pic"><img src="images/b5.png"></div>
+            <div id="pic"><img src="images/b1.png"></div>
+            <div id="pic"><img src="images/b2.png"></div>
+            <div id="pic"><img src="images/b3.png"></div>
+            <div id="pic"><img src="images/b4.png"></div>
+            <div id="pic"><img src="images/b5.png"></div>
+            <div id="pic"><img src="images/b1.png"></div>
+        </div>
+        <span id="left"><</span>
+        <span id="right">></span>
+        <ul class="nav" id="nav">
+            <li class="active">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+    </div>
+</body>
+<script src="js/animate.js"></script>
+<script>
+    /*head部分*/
+    var text = document.getElementById("text");
+    function move(){
+        clearInterval(intervalId);
+        var intervalId = setInterval(function(){
+            var marginLeft = text.style.marginLeft;
+                text.style.marginLeft = (parseInt(marginLeft) - 1) + "px";
+            if(text.style.marginLeft ==-360 + "px"){
+                clearInterval(intervalId);
+                text.style.marginLeft = 1000 + "px";
+                move();
+            }  
+        },20);
+    }
+    move(text);
+
+    /*img部分*/
+    var box = document.getElementById("box");
+    var navList = document.getElementById("nav").children;
+    var pics = document.getElementById("pics");
+    var left = document.getElementById("left");
+    var right = document.getElementById("right");
+    var index = 1;
+    var timer;
+    var isMoving = false;
+    /*轮播下一张的函数*/
+    function next(){
+        if(!isMoving){
+            isMoving = true;
+            index ++;
+            liChange();
+            animate(pics,{left:-1200*index},function(){
+                if(index === 6){
+                    pics.style.left = -1200 + "px";
+                    index = 1;
+                } 
+                isMoving = false;  
+            }); 
+        }
+    }
+    function prev(){
+        if(isMoving){
+            return;
+        }
+        isMoving = true;
+        index --;
+        liChange();
+        animate(pics,{left:-1200*index},function(){
+            if(index === 0){
+                pics.style.left = -6000 + "px";
+                index = 5;
+            }
+            isMoving = false;
+        }); 
+    }
+    var timer = setInterval(next,3000);
+    //鼠标滑上效果
+    box.onmouseover = function(){
+        animate(left,{opacity:50})
+        animate(right,{opacity:50})
+        clearInterval(timer)
+    }
+    //鼠标划出效果
+    box.onmouseout = function(){
+        animate(left,{opacity:0})
+        animate(right,{opacity:0})
+        timer = setInterval(next,3000);
+    }
+    right.onclick = next;
+    left.onclick = prev;
+    //小按钮点击事件
+    for (var i = 0; i < navList.length;i++){
+        navList[i].idx = i;
+        navList[i].onclick = function(){
+            index = this.idx + 1;
+            liChange();
+            animate(pics,{left:-1200*index})
+        }
+    }
+    //小按钮背景切换
+    function liChange(){
+        for(var i = 0;i < navList.length;i++){
+            navList[i].className = "";
+        }
+        if(index === 6){
+            navList[0].className = "active";
+        }else if(index === 0){
+            navList[4].className = "active";
+        }else{
+            navList[index-1].className = "active";
+        }
+    }
+</script>
+</html>
+
+<!-- // var pics = document.getElementById("pics");
+    // function move2(){
+    //     clearInterval(intervalId);
+    //     var intervalId = setInterval(function(){
+    //         var marginLeft = pics.style.marginLeft;
+    //             pics.style.marginLeft = (parseInt(marginLeft) - 1200) + "px";
+    //         if(pics.style.marginLeft ==-7200 + "px"){
+    //             clearInterval(intervalId);
+    //             pics.style.marginLeft = 0 + "px";
+    //             move2();
+    //         }  
+    //     },3000);
+    // }
+    // move2(pics); -->
